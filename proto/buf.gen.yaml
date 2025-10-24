@@ -1,15 +1,21 @@
-version: v2
-managed:
-  enabled: true
+version: v1
 plugins:
-  - remote: buf.build/grpc/go
-    out: pb
+  # Server code
+  - name: go
+    out: ../server/internal/pb
     opt:
       - paths=source_relative
-      - require_unimplemented_servers=false
-  - remote: buf.build/protocolbuffers/go
-    out: pb
+  - name: go-grpc
+    out: ../server/internal/pb
     opt:
       - paths=source_relative
-inputs:
-  - directory: pb
+
+  # Client code
+  - name: go
+    out: ../client/internal/pb
+    opt:
+      - paths=source_relative
+  - name: go-grpc
+    out: ../client/internal/pb
+    opt:
+      - paths=source_relative
