@@ -1,0 +1,57 @@
+services:
+  message-persist-mongodb:
+    image: mongo:8.0
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  kafka-1:
+    image: confluentinc/cp-kafka:7.4.1
+    container_name: kafka1
+    hostname: kafka-1
+    environment:
+      # ---- KRaft mode ----
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:9094
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      CLUSTER_ID: "OTMwNzFhYTY1ODNiNGE5OT"
+
+      # ---- Listeners ----
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,HOST:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://kafka-1:9092,CONTROLLER://kafka-1:9094,HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:9092,HOST://localhost:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      # ---- Single broker cluster ----
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+
+      # ---- Logging / storage ----
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    ports:
+      - "29092:29092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: kafka-ui
+    ports:
+      - "18080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-1:9092
+    depends_on:
+      - kafka-1
+
+volumes:
+  mongo-data:
+  kafka-data:
