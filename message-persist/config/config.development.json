@@ -1,0 +1,14 @@
+{
+  "server_address": "localhost",
+  "server_port": "3300",
+  "kafka": {
+    "broker": "localhost:29092",
+    "topic": "chat_message",
+    "group_id": "chat_message-group"
+  },
+  "mongo": {
+    "connection_string": "mongodb://localhost:27017",
+    "collection": "messages"
+  }
+}
+}

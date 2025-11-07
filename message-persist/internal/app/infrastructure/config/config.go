@@ -1,48 +1,64 @@
 package config
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
-	"go.uber.org/fx"
-)
-
-var Module = fx.Options(
-	fx.Provide(NewAppConfig),
+	"os"
 )
 
 type Kafka struct {
-	Broker  string `mapstructure:"broker"`
-	Topic   string `mapstructure:"topic"`
-	GroupId string `mapstructure:"group_id"`
+	Broker  string `mapstructure:"broker" json:"broker" yaml:"broker"`
+	Topic   string `mapstructure:"topic" json:"topic" yaml:"topic"`
+	GroupId string `mapstructure:"group_id" json:"group_id" yaml:"group_id"`
 }
 
 type Mongo struct {
-	ConnectionString string `mapstructure:"connection_string"`
-	Collection       string `mapstructure:"collection"`
+	ConnectionString string `mapstructure:"connection_string" json:"connection_string" yaml:"connection_string"`
+	Collection       string `mapstructure:"collection" json:"collection" yaml:"collection"`
 }
 
 type AppConfig struct {
-	Environment string `mapstructure:"environment"`
-	Address     string `mapstructure:"address"`
-	Port        string `mapstructure:"port"`
-	Kafka       Kafka  `mapstructure:"kafka"`
-	Mongo       Mongo  `mapstructure:"mongo"`
+	ServerAddress string `mapstructure:"server_address" json:"server_address" yaml:"server_address"`
+	ServerPort    string `mapstructure:"server_port"  json:"server_port" yaml:"server_port"`
+	Kafka         Kafka  `mapstructure:"kafka" json:"kafka" yaml:"kafka"`
+	Mongo         Mongo  `mapstructure:"mongo" json:"mongo" yaml:"mongo"`
 }
 
+const (
+	configFilePathKey = "CONFIG_FILE_PATH"
+	configFileNameKey = "CONFIG_FILE_NAME"
+	configFileTypeKey = "CONFIG_FILE_TYPE"
+)
+
 func NewAppConfig() (*AppConfig, error) {
-	viper.SetConfigName("config")
-	viper.SetConfigType("json")
-	viper.AddConfigPath("./config")
+	filepath := os.Getenv(configFilePathKey)
+	if filepath == "" {
+		return nil, ErrEnvFilePathNotSet
+	}
+
+	filename := os.Getenv(configFileNameKey)
+	if filename == "" {
+		return nil, ErrEnvFileNameNotSet
+	}
+
+	filetype := os.Getenv(configFileTypeKey)
+	if filetype == "" {
+		return nil, ErrEnvFileTypeNotSet
+	}
+
+	viper.SetConfigName(filename)
+	viper.SetConfigType(filetype)
+	viper.AddConfigPath(filepath)
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		return nil, fmt.Errorf("fatal error config file: %w", err)
+		return nil, newErrReadingConfig(err)
 	}
 
 	var appConfig AppConfig
+
 	err = viper.Unmarshal(&appConfig)
 	if err != nil {
-		return nil, fmt.Errorf("fatal error config file: %w", err)
+		return nil, newErrUnmarshallingConfig(err)
 	}
 
 	return &appConfig, nil
