@@ -10,6 +10,9 @@ var Module = fx.Options(
 	fx.Provide(
 		func(config *config.AppConfig) Config {
 			conn := config.Mongo.ConnectionString
+			if conn == "" {
+				panic("mongodb connection string is required")
+			}
 
 			return Config{ConnectionString: conn}
 		},
