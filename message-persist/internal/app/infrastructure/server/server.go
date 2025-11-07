@@ -36,7 +36,7 @@ func NewGinServer() *gin.Engine {
 
 func StartServer(lifecycle fx.Lifecycle, cnfg *config.AppConfig, engine *gin.Engine, lc fx.Shutdowner) {
 	srv := &http.Server{
-		Addr:    net.JoinHostPort(cnfg.Address, cnfg.Port),
+		Addr:    net.JoinHostPort(cnfg.ServerAddress, cnfg.ServerPort),
 		Handler: engine,
 	}
 

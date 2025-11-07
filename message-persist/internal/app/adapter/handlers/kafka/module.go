@@ -4,21 +4,18 @@ import (
 	"context"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/fx"
-	"log"
 	"message-persist/internal/app/infrastructure/config"
 )
 
 func NewKafkaReader(config *config.AppConfig) *kafka.Reader {
 	kafkaURL := config.Kafka.Broker
-	if kafkaURL == "" && config.Environment == "Development" { // for local development
-		kafkaURL = "localhost:9092"
+	if kafkaURL == "" {
+		panic("kafka broker url config is required")
 	}
 
 	topic := config.Kafka.Topic
-	if topic == "" && config.Environment == "Development" { // for local development
-		topic = "domain-demo"
-	} else if topic == "" {
-		log.Fatalf("KAFKA_TOPIC is not set")
+	if topic == "" {
+		panic("kafka topic config is required")
 	}
 
 	return kafka.NewReader(kafka.ReaderConfig{

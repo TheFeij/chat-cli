@@ -6,12 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-type MongoDBConfig struct {
-	URI string
+type Config struct {
+	ConnectionString string
 }
 
-func ConnectToMongo(cfg MongoDBConfig) (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(cfg.URI)
+func ConnectToMongo(cnfg Config) (*mongo.Client, error) {
+	clientOptions := options.Client().ApplyURI(cnfg.ConnectionString)
 
 	client, err := mongo.Connect(clientOptions)
 	if err != nil {

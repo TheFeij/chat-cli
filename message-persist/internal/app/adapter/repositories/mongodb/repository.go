@@ -3,8 +3,9 @@ package mongodb
 import (
 	"context"
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"message-persist/internal/app/core/models"
+	"message-persist/internal/app/core/ports"
 	"message-persist/internal/app/infrastructure/config"
 	"time"
 )
@@ -12,6 +13,8 @@ import (
 type MessageRepository struct {
 	collection *mongo.Collection
 }
+
+var _ ports.MessageRepository = (*MessageRepository)(nil)
 
 func NewMessageRepository(client *mongo.Client, config *config.AppConfig) *MessageRepository {
 	collection := client.Database("TODO").Collection(config.Mongo.Collection)

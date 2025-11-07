@@ -1,7 +1,7 @@
 services:
   message-persist-mongodb:
     image: mongo:8.0
-    container_name: mongodb
+    container_name: message-persist-mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 1234

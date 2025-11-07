@@ -7,10 +7,10 @@ import (
 )
 
 type MessagePersistService struct {
-	repository *ports.MessageRepository
+	repository ports.MessageRepository
 }
 
-func NewMessagePersistService(repository *ports.MessageRepository) *MessagePersistService {
+func NewMessagePersistService(repository ports.MessageRepository) *MessagePersistService {
 	return &MessagePersistService{
 		repository: repository,
 	}

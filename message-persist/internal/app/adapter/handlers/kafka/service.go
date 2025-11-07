@@ -8,18 +8,15 @@ import (
 	"message-persist/internal/app/core/ports"
 )
 
-// KafkaConsumerService manages Kafka message consumption.
 type KafkaConsumerService struct {
 	reader         *kafka.Reader
 	persistService ports.MessagePersistService
 }
 
-// NewKafkaConsumerService creates a new instance of KafkaConsumerService.
 func NewKafkaConsumerService(reader *kafka.Reader, dcs ports.MessagePersistService) *KafkaConsumerService {
 	return &KafkaConsumerService{reader: reader, persistService: dcs}
 }
 
-// Start begins the message consumption from Kafka.
 func (k *KafkaConsumerService) Start() error {
 	log.Println("Starting Kafka consumer...")
 	go func() {
